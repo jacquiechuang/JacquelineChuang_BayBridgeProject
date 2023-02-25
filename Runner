@@ -1,0 +1,18 @@
+/**
+ * Jacqueline Chuang
+ * APCS C Period
+ * BayBridge Project
+ * 11/1/21
+ */
+
+import java.io.IOException;
+import java.util.ArrayList;
+
+public class Runner {
+    public static void main(String[] args) throws IOException {
+        ExtraCreditTP tp = new ExtraCreditTP();
+        //TollPlaza tp = new TollPlaza();
+        tp.loadCarInfo();
+        tp.run();
+    }
+}
