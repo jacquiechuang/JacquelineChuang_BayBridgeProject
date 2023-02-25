@@ -1,0 +1,111 @@
+/**
+ * Jacqueline Chuang
+ * APCS C Period
+ * BayBridge Project
+ * 11/1/21
+ */
+
+import java.util.ArrayList;
+
+public class TollBooth {
+    private int boothNumber;
+    private ArrayList<Car> cars;
+    private double revenue;
+    private final int AXLES2 = 6; // private: each instance has this variable; final: you cannot change it
+    private final int AXLES3 = 16;
+    private final int AXLES4 = 21;
+    private final int AXLES5 = 26;
+    private final int AXLES6 = 31;
+    private final int AXLES7 = 36;
+
+    public TollBooth(int boothNum){
+        boothNumber = boothNum;
+        cars = new ArrayList<Car>();
+        revenue = 0;
+    }
+
+    public int getBoothNumber() {
+        return boothNumber;
+    }
+
+    public void setBoothNumber(int boothNumber) {
+        this.boothNumber = boothNumber;
+    }
+
+    public ArrayList<Car> getCars() {
+        return sortCars(cars);
+    }
+
+    public void setCars(ArrayList<Car> cars) {
+        this.cars = cars;
+    }
+
+    public double getRevenue() {
+        return revenue;
+    }
+
+    public void setRevenue(double revenue) {
+        this.revenue = revenue;
+    }
+
+    public void addCar(Car c) { cars.add(c); }
+
+    public ArrayList<Car> getCarsOfCode(String specialCode) {
+        // get all the cars of a certain special code
+        ArrayList<Car> output = new ArrayList<Car>();
+        for (int i = 0; i < cars.size(); i++) {
+            if (cars.get(i).getCode().equals(specialCode)) {
+                output.add(cars.get(i));
+            }
+        }
+        return sortCars(output);
+    }
+
+    public ArrayList<Car> sortCars(ArrayList<Car> carList) {
+        int min;
+        for (int k = 0; k < carList.size(); k++) {
+            min = k;
+            for (int j = k + 1; j < carList.size(); j++) {
+                if (carList.get(min).getPlate().compareTo(carList.get(j).getPlate()) > 0) {
+                    min = j;
+                }
+            }
+            Car temp = carList.get(k);
+            carList.set(k, carList.get(min));
+            carList.set(min, temp);
+        }
+        return carList;
+    }
+
+    // this method calculates and returns the amount of cash collected at this booth
+    public double calculateRevenue(){
+        double revenue = 0;
+        for (int i = 0; i < cars.size(); i++){ // need to visit all cars in this booth
+            Car c = cars.get(i);
+            if (c.getCode().equals("CASH")) {
+                int axles = c.getAxles();
+                switch (axles) {
+                    case 2:
+                        revenue += AXLES2;
+                        break;
+                    case 3:
+                        revenue += AXLES3;
+                        break;
+                    case 4:
+                        revenue += AXLES4;
+                        break;
+                    case 5:
+                        revenue += AXLES5;
+                        break;
+                    case 6:
+                        revenue += AXLES6;
+                        break;
+                    default:
+                        revenue += AXLES7;
+                }
+            }
+        } // done calculating the revenue after examining all cars
+        return revenue;
+    }
+
+}
