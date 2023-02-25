@@ -1,0 +1,115 @@
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Scanner;
+
+/**
+ * Jacqueline Chuang
+ * APCS C Period
+ * BayBridge Project
+ * 11/1/21
+ */
+
+public class InputGenerator {
+
+    public static void main(String[] arg) throws IOException {
+
+    }
+
+    // this method is checkpoint 1 of the project
+    public static void generateCars(int numOfCars, double percentCash, double percentFastrk, double percentChp, double percentCaltrns, double percentGvrmnt, double percentEmrgcy) throws IOException {
+
+        PrintWriter textFile = new PrintWriter(new FileWriter("textFile.dat"));
+
+        double cashCars = (percentCash / 100) * numOfCars;
+        double fastrkCars = (percentFastrk / 100) * numOfCars;
+        double chpCars = (percentChp / 100) * numOfCars;
+        double caltrnsCars = (percentCaltrns / 100) * numOfCars;
+        double gvrmntCars = (percentGvrmnt / 100) * numOfCars;
+        double emrgcyCars = (percentEmrgcy / 100) * numOfCars;
+
+        for (int j = 1; j <= numOfCars; j++) {
+            // booth number
+            int boothNumber = (int)(Math.random() * 7 + 1);
+            // license plate
+            char plateDigit;
+            String licensePlate = "";
+            for (int i = 1; i <= 7; i++) {
+                int randomNumber = (int)((Math.random() * 36) + 'A');
+                if (randomNumber <= 90) {
+                    plateDigit = (char)randomNumber;
+                } else {
+                    plateDigit = (char)(randomNumber - 43);
+                }
+                licensePlate += plateDigit;
+            }
+            // axle number
+            int axleNumber = (int)(Math.random() * 23 + 2);
+
+            // special code
+            String specialCode = "";
+
+            boolean available = true;
+            while (available) {
+                int randomCode = (int)(Math.random() * 7);
+                switch (randomCode) {
+                    case 1:
+                        if (cashCars > 0) {
+                            cashCars--;
+                            available = false;
+                            specialCode = "CASH";
+                        }
+                        break;
+                    case 2:
+                        if (fastrkCars > 0) {
+                            fastrkCars--;
+                            available = false;
+                            specialCode = "FASTRK";
+                        }
+                        break;
+                    case 3:
+                        if (chpCars > 0) {
+                            chpCars--;
+                            available = false;
+                            specialCode = "CHP";
+                        }
+                        break;
+                    case 4:
+                        if (caltrnsCars > 0) {
+                            caltrnsCars--;
+                            available = false;
+                            specialCode = "CALTRNS";
+                        }
+                        break;
+                    case 5:
+                        if (gvrmntCars > 0) {
+                            gvrmntCars--;
+                            available = false;
+                            specialCode = "GVRMNT";
+                        }
+                        break;
+                    case 6:
+                        if (emrgcyCars > 0) {
+                            emrgcyCars--;
+                            available = false;
+                            specialCode = "EMRGCY";
+                        }
+                        break;
+                }
+            }
+
+            String carInfo = boothNumber + " " + licensePlate + " " + axleNumber + " " + specialCode;
+
+            textFile.println(carInfo);
+        }
+        textFile.close();
+    }
+
+    public static void readFromFile() throws IOException {
+        Scanner fileReader = new Scanner(new File("textFile.dat"));
+        while (fileReader.hasNextLine()) {
+            System.out.println(fileReader.nextLine());
+        }
+    }
+}
