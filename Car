@@ -1,0 +1,57 @@
+/**
+ * Jacqueline Chuang
+ * APCS C Period
+ * BayBridge Project
+ * 11/1/21
+ */
+
+public class Car {
+    // licensePlate, numberOfAxles, specialCode
+    private String plate;
+    private int axles;
+    private String code;
+
+    // initializing constructor: initializing the variables of the class
+    public Car(String licensePlate, int numOfAxles, String specialCode){
+        plate = licensePlate;
+        axles = numOfAxles;
+        code = specialCode;
+    }
+
+    // getters = accessors
+    public String getPlate(){
+        return plate;
+    }
+
+    public int getAxles(){
+        return axles;
+    }
+
+    public String getCode(){
+        return code;
+    }
+
+    // setters = mutators
+    public void setPlate(String newPlate){
+        plate = newPlate;
+    }
+
+    public void setAxle(int newAxles){
+        axles = newAxles;
+    }
+
+    public void setCode(String newCode){
+        code = newCode;
+    }
+
+    // to return the String instead of the memory location
+    public String toString(){
+        return "Plate: " + plate + " Axles: " + axles + " Code: " + code;
+        // they are in the same class, so I can still access these private variables
+    }
+
+    //this method compares 2 Car objects based on license plate
+    public int compareTo (Car c){
+        return plate.compareTo(c.plate);
+    }
+}
