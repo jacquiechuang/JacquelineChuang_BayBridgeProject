@@ -1,0 +1,527 @@
+/**
+ * Jacqueline Chuang
+ * APCS C Period
+ * BayBridge Project
+ * 11/1/21
+ */
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class ExtraCreditTP {
+    private static ArrayList<TollBooth[]> records;
+    private static TollBooth[] booths;
+
+    public ExtraCreditTP(){
+        records = new ArrayList();
+    }
+
+    // call all the methods for this TollPlaza class
+    public void run() throws IOException {
+
+        // get user inputs for mainMenu and subMenu
+        while (true) {
+            int mainMenuInput = getUserInput(0);
+            int subMenuInput = 0;
+            int dayMenuInput = 0;
+            String licenseInput = "";
+            if (mainMenuInput >= 1 && mainMenuInput <= 5) { // booths
+                subMenuInput = getUserInput(1);
+                dayMenuInput = getUserInput(3);
+            } else if (mainMenuInput == 6) { // statistics
+                subMenuInput = getUserInput(2);
+            } else if (mainMenuInput == 9) { // quit
+                licenseInput = getStringInput();
+            } else if (mainMenuInput == 10) { // quit
+                return;
+            }
+
+            // process mainMenu and subMenu inputs
+            switch (mainMenuInput) {
+                case 1:
+                    printAllCars(subMenuInput, dayMenuInput);
+                    break;
+                case 2:
+                    printAllCashCars(subMenuInput, dayMenuInput);
+                    break;
+                case 3:
+                    printAllFastrkCars(subMenuInput, dayMenuInput);
+                    break;
+                case 4:
+                    printAllTollExemptCars(subMenuInput, dayMenuInput);
+                    break;
+                case 5:
+                    printAllTollAmount(subMenuInput, dayMenuInput);
+                    break;
+                case 6:
+                    switch (subMenuInput) {
+                        case 1:
+                            printAveBooth();
+                            break;
+                        case 2:
+                            printCashPercent();
+                            break;
+                        case 3:
+                            printFastrkPercent();
+                            break;
+                        case 4:
+                            printTollExemptPercent();
+                            break;
+                        case 5:
+                            printBusiestBooth();
+                            break;
+                        case 6:
+                            printMostCashBooth();
+                            break;
+                    }
+                    break;
+                case 7:
+                    loadCarInfo();
+                    break;
+                case 8:
+                    if (records.size() > 1) {
+                        removeCarInfo();
+                    } else {
+                        System.out.println("ERROR: Cannot remove any cars from history because there is only one day.");
+                    }
+                    break;
+                case 9:
+                    printSearchLicense(licenseInput);
+                    break;
+            }
+        }
+    }
+
+    // prints out the main menu of the TollPlaza
+    public void displayMenu() {
+        System.out.println("WELCOME TO THE BAY BRIDGE TOLL PLAZA DATABASE       Days: " + records.size() + "\n");
+        System.out.println("Enter a number to select one of the following functions.");
+        System.out.println("1. Display all cars.");
+        System.out.println("2. Display cash-paying cars.");
+        System.out.println("3. Display FasTrak cars.");
+        System.out.println("4. Display toll-exempt cars.");
+        System.out.println("5. Display toll amount.");
+        System.out.println("6. Display statistics.");
+        System.out.println("7. Add Day.");
+        System.out.println("8. Remove Day.");
+        System.out.println("9. Search for car.");
+        System.out.println("10. Quit.");
+    }
+
+    // prints out the sub menu of the TollPlaza
+    public void displaySubMenu() {
+        System.out.println("Enter a number to select your tollbooth.");
+        System.out.println("1. Booth #1.");
+        System.out.println("2. Booth #2.");
+        System.out.println("3. Booth #3.");
+        System.out.println("4. Booth #4.");
+        System.out.println("5. Booth #5.");
+        System.out.println("6. Booth #6.");
+        System.out.println("7. Booth #7.");
+        System.out.println("8. All booths.");
+    }
+
+    // prints out the day menu of the TollPlaza
+    public void displayDaysMenu() {
+        System.out.println("Enter a number to select which day " + "[0 - " + (records.size() - 1) + "]");
+    }
+
+    // prints out the search menu of the TollPlaza
+    public void displaySearchMenu() {
+        System.out.println("Enter license plate of car.");
+    }
+
+    // prints out the stats menu of the TollPlaza
+    public void displayStatMenu() {
+        System.out.println("1. Display average amount collected per booth");
+        System.out.println("2. Display cash-paying cars percentage");
+        System.out.println("3. Display FasTrak cars percentage");
+        System.out.println("4. Display toll-exempt cars percentage");
+        System.out.println("5. Display the busiest booth");
+        System.out.println("6. Display the most-cash booth");
+    }
+
+    public String getStringInput() {
+        Scanner userInput = new Scanner(System.in);
+        displaySearchMenu();
+        String userLicense = userInput.next();
+        return userLicense;
+    }
+
+    // get the user input based on the menu type (main, sub, or stats)
+    public int getUserInput(int menuType) {
+        Scanner userInput = new Scanner(System.in);
+        while (true) {
+            switch (menuType) {
+                case 0:
+                    displayMenu();
+                    break;
+                case 1:
+                    displaySubMenu();
+                    break;
+                case 2:
+                    displayStatMenu();
+                    break;
+                case 3:
+                    displayDaysMenu();
+                    break;
+            }
+            if (userInput.hasNextInt()) {
+                int userNum = userInput.nextInt();
+                if (checkInput(menuType, userNum)) {
+                    return userNum;
+                }
+            } else {
+                userInput.nextLine();
+            }
+            System.out.println("Invalid Input.");
+        }
+    }
+
+
+    // check to see whether or not the user input is invalid for menu type
+    public boolean checkInput(int menuType, int userNum) {
+        switch (menuType) {
+            case 0:
+                return (userNum >= 1 && userNum <= 10);
+            case 1:
+                return (userNum >= 1 && userNum <= 8);
+            case 2:
+                return (userNum >= 1 && userNum <= 6);
+            case 3:
+                return (userNum >= 0 && userNum < records.size());
+            default:
+                return false;
+        }
+    }
+
+    // get arraylist of cars (from getCarList method) --> print it in the right format
+    private void printCarsBoothInfo(ArrayList<Car> carList) {
+        if (carList.size() == 0) {
+            System.out.println("None");
+        } else {
+            for (int i = 0; i < carList.size(); i++) {
+                System.out.println(carList.get(i).getPlate() + " " + carList.get(i).getAxles());
+            }
+        }
+    }
+
+    // takes in the booth number and special code --> returns an arraylist (that still needs to be processed)
+    private ArrayList<Car> getCarList (int input2, int input3, String code) {
+        if (code.equals("ALL")) return records.get(input3)[input2 - 1].getCars();
+        else return records.get(input3)[input2 - 1].getCarsOfCode(code);
+    }
+
+    // prints all cars in specified booth
+    private int printBoothAllCars(int input2, int input3) {
+        System.out.println("Booth " + input2);
+        ArrayList<Car> carList = getCarList(input2, input3,"ALL");
+        printCarsBoothInfo(carList);
+        System.out.println("Total cars in booth " + input2 + ": " + carList.size());
+        System.out.println();
+        return carList.size();
+    }
+
+    // prints cars in all booths
+    private void printAllCars(int input2, int input3) {
+        if (input2 <= 7) {
+            printBoothAllCars(input2, input3);
+        } else {
+            int totalCars = 0;
+            for (int k = 1; k <= 7; k++) {
+                totalCars += printBoothAllCars(k, input3);
+            }
+            System.out.println("Total cars in all booths: " + totalCars);
+        }
+    }
+
+    // prints all cash cars in specified booth
+    private int printBoothCashCars(int input2, int input3) {
+        System.out.println("Booth " + input2);
+        ArrayList<Car> carList = getCarList(input2, input3,"CASH");
+        printCarsBoothInfo(carList);
+        System.out.println("Total cars in booth " + input2 + ": " + carList.size());
+        System.out.println();
+        return carList.size();
+    }
+
+    // prints cash cars in all booths
+    private void printAllCashCars(int input2, int input3) {
+        if (input2 <= 7) {
+            printBoothCashCars(input2, input3);
+        } else {
+            int totalCars = 0;
+            for (int k = 1; k <= 7; k++) {
+                totalCars += printBoothCashCars(k, input3);
+            }
+            System.out.println("Total cars in all booths: " + totalCars);
+        }
+    }
+
+    // prints all fastrk cars in specified booth
+    private int printBoothFastrkCars(int input2, int input3) {
+        System.out.println("Booth " + input2);
+        ArrayList<Car> carList = getCarList(input2, input3,"FASTRK");
+        printCarsBoothInfo(carList);
+        System.out.println("Total cars in booth " + input2 + ": " + carList.size());
+        System.out.println();
+        return carList.size();
+    }
+
+    // prints fastrk cars in all booths
+    private void printAllFastrkCars(int input2, int input3) {
+        if (input2 <= 7) {
+            printBoothFastrkCars(input2, input3);
+        } else {
+            int totalCars = 0;
+            for (int k = 1; k <= 7; k++) {
+                totalCars += printBoothFastrkCars(k, input3);
+            }
+            System.out.println("Total cars in all booths: " + totalCars);
+        }
+    }
+
+    // prints all toll excempt cars in specified booth
+    private int printBoothTollExemptCars(int input2, int input3) {
+        int totalCars = 0;
+        ArrayList<Car> carList;
+
+        System.out.println("Booth " + input2);
+
+        System.out.println("CALTRNS");
+        carList = getCarList(input2, input3,"CALTRNS");
+        printCarsBoothInfo(carList);
+        System.out.println();
+        totalCars += carList.size();
+
+        System.out.println("CHP");
+        carList = getCarList(input2, input3, "CHP");
+        printCarsBoothInfo(carList);
+        System.out.println();
+        totalCars += carList.size();
+
+        System.out.println("EMRGCY");
+        carList = getCarList(input2, input3, "EMRGCY");
+        printCarsBoothInfo(carList);
+        System.out.println();
+        totalCars += carList.size();
+
+        System.out.println("GVRMNT");
+        carList = getCarList(input2, input3, "GVRMNT");
+        printCarsBoothInfo(carList);
+        System.out.println();
+        totalCars += carList.size();
+
+        System.out.println("Total cars in booth " + input2 + ": " + totalCars);
+        System.out.println();
+        return totalCars;
+    }
+
+    // prints toll exempt cars in all booths
+    private void printAllTollExemptCars(int input2, int input3) {
+        if (input2 <= 7) {
+            printBoothTollExemptCars(input2, input3);
+        } else {
+            int totalCars = 0;
+            for (int k = 1; k <= 7; k++) {
+                totalCars += printBoothTollExemptCars(k, input3);
+            }
+            System.out.println("Total cars in all booths: " + totalCars);
+        }
+    }
+
+    // prints toll amount of specified `booth`
+    private double printBoothTollAmount(int input2, int input3) {
+        System.out.println("Booth " + input2);
+        System.out.print("Amount: $");
+        System.out.printf("%.2f\n", records.get(input3)[input2 - 1].getRevenue());
+        System.out.println();
+        return records.get(input3)[input2 - 1].getRevenue();
+    }
+
+    // prints toll amount of all booths
+    private void printAllTollAmount(int input2, int input3) {
+        if (input2 <= 7) {
+            printBoothTollAmount(input2, input3);
+        } else {
+            double totalRevenue = 0.0;
+            for (int k = 1; k <= 7; k++) {
+                totalRevenue += printBoothTollAmount(k, input3);
+            }
+            System.out.println("All booths");
+            System.out.print("Amount: $");
+            System.out.printf("%.2f\n", totalRevenue);
+        }
+    }
+
+    // prints toll amount of all booths
+    private void printAveBooth() {
+        double totalRevenue = 0;
+        for (int k = 0; k < records.size(); k++) {
+            for (int p = 1; p <= 7; p++) {
+                totalRevenue += records.get(k)[p - 1].getRevenue();
+            }
+        }
+        double average = totalRevenue / (7 * records.size());
+        System.out.print("Average: $");
+        System.out.printf("%.2f\n", average);
+
+    }
+
+    // prints percentage of cash-paying cars
+    private void printCashPercent() {
+        double totalCashCars = 0;
+        double totalCars = 0;
+        for (int k = 0; k < records.size(); k++) {
+            for (int y = 1; y <= 7; y++) {
+                totalCashCars += records.get(k)[y - 1].getCarsOfCode("CASH").size();
+                totalCars += records.get(k)[y - 1].getCars().size();
+            }
+        }
+        double percentage = (totalCashCars / totalCars) * 100;
+        System.out.print("Cash-paying cars percentage: ");
+        System.out.printf("%.2f", percentage);
+        System.out.println("%");
+    }
+
+    // prints percentage of fastrk cars
+    private void printFastrkPercent() {
+        double totalFastrkCars = 0;
+        double totalCars = 0;
+        for (int k = 0; k < records.size(); k++) {
+            for (int y = 1; y <= 7; y++) {
+                totalFastrkCars += records.get(k)[y - 1].getCarsOfCode("FASTRK").size();
+                totalCars += records.get(k)[y - 1].getCars().size();
+            }
+        }
+        double percentage = (totalFastrkCars / totalCars) * 100;
+        System.out.print("FasTrak cars percentage: ");
+        System.out.printf("%.2f", percentage);
+        System.out.println("%");
+    }
+
+    // prints percentage of toll exempt cars
+    private void printTollExemptPercent() {
+        double totalTollExemptCars = 0;
+        double totalCars = 0;
+        for (int k = 0; k < records.size(); k++) {
+            for (int y = 1; y <= 7; y++) {
+                totalTollExemptCars += records.get(k)[y - 1].getCarsOfCode("CHP").size();
+                totalTollExemptCars += records.get(k)[y - 1].getCarsOfCode("CALTRNS").size();
+                totalTollExemptCars += records.get(k)[y - 1].getCarsOfCode("GVRMNT").size();
+                totalTollExemptCars += records.get(k)[y - 1].getCarsOfCode("EMRGCY").size();
+                totalCars += records.get(k)[y - 1].getCars().size();
+            }
+        }
+        double percentage = (totalTollExemptCars / totalCars) * 100;
+        System.out.print("Toll-exempt cars percentage: ");
+        System.out.printf("%.2f", percentage);
+        System.out.println("%");
+    }
+
+    // prints busiest booth (booth with most cars)
+    private void printBusiestBooth() {
+        int busiestBooth = 1;
+        int busiestDay = 0;
+        for (int k = 0; k < records.size(); k++) {
+            for (int t = 1; t <= 7; t++) {
+                if (records.get(k)[t - 1].getCars().size() > records.get(busiestDay)[busiestBooth - 1].getCars().size()) {
+                    busiestBooth = t;
+                    busiestDay = k;
+                }
+            }
+        }
+        System.out.println("Booth " + busiestBooth + " on day " + busiestDay + ": " + records.get(busiestDay)[busiestBooth - 1].getCars().size());
+    }
+
+    // prints most cash booth (booth with most revenue)
+    private void printMostCashBooth() {
+        int mostCashBooth = 1;
+        int mostCashDay = 0;
+        for (int k = 0; k < records.size(); k++) {
+            for (int t = 1; t <= 7; t++) {
+                if (records.get(k)[t - 1].getRevenue() > records.get(mostCashDay)[mostCashBooth - 1].getRevenue()) {
+                    mostCashBooth = t;
+                    mostCashDay = k;
+                }
+            }
+        }
+        System.out.print("Booth " + mostCashBooth + " on day " + mostCashDay + ": $");
+        System.out.printf("%.2f\n", records.get(mostCashDay)[mostCashBooth - 1].getRevenue());
+    }
+
+    // prints location of car with license that user provides
+    private void printSearchLicense(String licenseInput) {
+        boolean flag = false;
+        int searchBooth = 1;
+        int searchDay = 0;
+        int searchIndex = 0;
+        for (int k = 0; k < records.size(); k++) {
+            for (int t = 1; t <= 7; t++) {
+                for (int l = 0; l < records.get(k)[t - 1].getCars().size(); l++) {
+                    if (records.get(k)[t - 1].getCars().get(l).getPlate().equals(licenseInput)) {
+                        flag = true;
+                        searchBooth = t;
+                        searchDay = k;
+                        searchIndex = l;
+                    }
+                }
+            }
+        }
+        if (flag) {
+            System.out.println("Car with license plate " + licenseInput + " found in Booth " + searchBooth + " on Day " + searchDay + ".");
+        } else {
+            System.out.println("Car with license plate " + licenseInput + " not found.");
+        }
+    }
+
+
+    public static void removeCarInfo() {
+        System.out.println("Day " + (records.size() - 1) + " removed.");
+        records.remove(records.size() - 1);
+    }
+
+    // generate cars, read file, create car objects, and load into corresponding tollbooths
+    public void loadCarInfo() throws IOException {
+        String carObject;
+        int boothNumber;
+        String licensePlate;
+        int numOfAxles;
+        String specialCode;
+
+        // creates a txt file that contains info of some number cars
+        InputGenerator.generateCars(50, 30, 10, 20, 10, 10, 20);
+
+        // read one line at a time, extract booth number, extract license plate, special code, and axle to make the car,
+        // then add one car to the corresponding booth
+        Scanner fileReader = new Scanner(new File("textFile.dat"));
+        TollBooth[] newBooths = new TollBooth[7];
+        for (int i = 0; i < 7; i++){
+            newBooths[i] = new TollBooth(i + 1); // you don't want a booth 0
+        }
+        while (fileReader.hasNextLine()) {
+            carObject = fileReader.nextLine();
+            int indexOfFirstSpace = carObject.indexOf(" ");
+            boothNumber = Integer.parseInt(carObject.substring(0, indexOfFirstSpace));
+            carObject = carObject.substring(indexOfFirstSpace + 1);
+            int indexOfFirstSpace2 = carObject.indexOf(" ");
+            licensePlate = carObject.substring(0, indexOfFirstSpace2);
+            carObject = carObject.substring(indexOfFirstSpace2 + 1);
+            int indexOfFirstSpace3 = carObject.indexOf(" ");
+            numOfAxles = Integer.parseInt(carObject.substring(0, indexOfFirstSpace3));
+            specialCode = carObject.substring(indexOfFirstSpace3 + 1);
+
+            Car c = new Car (licensePlate, numOfAxles, specialCode);
+
+            //System.out.println("tp booth #: " + boothNumber + " license plate: " + licensePlate);
+            newBooths[boothNumber - 1].addCar(c);
+        }
+        for (int i = 0; i < newBooths.length; i++) {
+            newBooths[i].setRevenue(newBooths[i].calculateRevenue());
+        }
+        records.add(0,newBooths);
+    }
+
+}
